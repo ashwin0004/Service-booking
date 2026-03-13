@@ -3,10 +3,17 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/marketplace");
+  };
 
   return (
     <div className="flex min-h-screen font-display antialiased bg-white">
@@ -33,7 +40,7 @@ export default function LoginPage() {
             </h1>
           </div>
 
-          <form action="#" className="space-y-5" method="POST">
+          <form onSubmit={handleSubmit} className="space-y-5" method="POST">
             <div>
               <label
                 className="block text-sm font-medium text-[#0f172a]"
