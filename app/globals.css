@@ -15,6 +15,21 @@
   --border-radius-lg: 0.5rem;
   --border-radius-xl: 0.75rem;
   --border-radius-full: 9999px;
+
+  --animate-fade-hint: fadeHint 4s ease 1.5s both;
+  --animate-mscroll: mscroll 1.4s ease infinite;
+
+  @keyframes fadeHint {
+    0% { opacity: 0; transform: translateY(6px); }
+    25% { opacity: 1; transform: translateY(0); }
+    75% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes mscroll {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(7px); opacity: 0; }
+  }
 }
 
 :root {

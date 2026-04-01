@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -53,61 +53,211 @@ function Header() {
   );
 }
 
-// --- Hero Component ---
-function Hero() {
+// --- Antigravity Hero Component ---
+function AntigravityHero() {
+  const [loadingPercentage, setLoadingPercentage] = useState(0);
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const framesRef = useRef<HTMLImageElement[]>([]);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const cursorRingRef = useRef<HTMLDivElement>(null);
+  const totalFrames = 300;
+
+  useEffect(() => {
+    let loadedCount = 0;
+    const frames: HTMLImageElement[] = [];
+
+    // Preload all frames
+    if (framesRef.current.length === 0) {
+      for (let i = 1; i <= totalFrames; i++) {
+        const img = new window.Image();
+        const index = String(i).padStart(3, '0');
+        // Fetch path to frames
+        img.src = `/frames/ezgif-frame-${index}.jpg`;
+        img.onload = () => {
+          loadedCount++;
+          setLoadingPercentage(Math.round((loadedCount / totalFrames) * 100));
+          if (loadedCount === totalFrames && canvasRef.current) {
+            drawFrame(0);
+          }
+        };
+        frames.push(img);
+      }
+      framesRef.current = frames;
+    }
+  }, []);
+
+  const drawFrame = (frameIndex: number) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    const img = framesRef.current[frameIndex];
+
+    if (!canvas || !ctx || !img || !img.complete) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    const canvasRatio = rect.width / rect.height;
+    const imgRatio = img.width / img.height;
+
+    let renderWidth, renderHeight, x, y;
+
+    if (canvasRatio > imgRatio) {
+      renderWidth = rect.width;
+      renderHeight = rect.width / imgRatio;
+      x = 0;
+      y = (rect.height - renderHeight) / 2;
+    } else {
+      renderWidth = rect.height * imgRatio;
+      renderHeight = rect.height;
+      x = (rect.width - renderWidth) / 2;
+      y = 0;
+    }
+
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    ctx.filter = 'brightness(0.85)';
+    ctx.drawImage(img, x, y, renderWidth, renderHeight);
+    ctx.filter = 'none';
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (loadingPercentage < 100) return;
+
+      const percentage = e.clientX / window.innerWidth;
+      let frameIndex = Math.floor(percentage * totalFrames);
+      if (frameIndex >= totalFrames) frameIndex = totalFrames - 1;
+      if (frameIndex < 0) frameIndex = 0;
+
+      setCurrentFrame(frameIndex);
+      drawFrame(frameIndex);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [loadingPercentage]);
+
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => {
+      // Use smooth translate
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
+      }
+      if (cursorRingRef.current) {
+        cursorRingRef.current.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
+      }
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    return () => window.removeEventListener('mousemove', moveCursor);
+  }, []);
+
   return (
-    <section className="mb-16 bg-linear-to-r from-[#eef2ff] via-[#fdf2f8] to-[#fce7f3] py-20 rounded-b-[4rem]">
-      <div className="max-w-5xl mx-auto px-6 w-full">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-center mx-auto text-slate-900">
-          Book the best <br />
-          <span className="text-slate-900/60">beauty & wellness.</span>
-        </h2>
-        <p className="text-slate-500 mb-8 text-lg text-center mx-auto max-w-2xl">
-          Discover top-rated salons, barbers, medspas, wellness studios and beauty experts trusted by millions worldwide
-        </p>
-
-        <div className="flex flex-col md:flex-row items-center bg-white border border-slate-200 md:rounded-full rounded-2xl p-2 shadow-xl max-w-4xl mx-auto mt-12 gap-2 md:gap-0">
-          <div className="flex-[1.5] flex items-center gap-3 px-6 py-3 md:border-r border-slate-100 w-full">
-            <Search className="w-5 h-5 text-slate-900" />
-            <input
-              className="bg-transparent border-none focus:outline-none w-full text-slate-800 placeholder:text-slate-500 font-medium text-sm md:text-base"
-              placeholder="All treatments and venues"
-              type="text"
-            />
+    <>
+      {loadingPercentage < 100 && (
+        <div className="fixed inset-0 bg-[#080808] z-1000 flex flex-col items-center justify-center gap-8 transition-opacity duration-700">
+          <div className="font-sans font-bold text-5xl text-[#E8FF3A] tracking-[0.2em] mb-4">ANTIGRAVITY</div>
+          <div className="w-[180px] h-px bg-white/10 relative">
+            <div className="absolute top-0 left-0 h-full bg-[#E8FF3A] transition-[width] duration-75" style={{ width: `${Math.min(loadingPercentage, 100)}%` }}></div>
           </div>
-          <div className="flex-1 flex items-center gap-3 px-6 py-3 md:border-r border-slate-100 w-full">
-            <MapPin className="w-5 h-5 text-slate-900" />
-            <input
-              className="bg-transparent border-none focus:outline-none w-full text-slate-800 font-medium text-sm md:text-base"
-              placeholder="Current location"
-              type="text"
-              defaultValue="Current location"
-            />
-          </div>
-          <div className="flex-1 flex items-center gap-3 px-6 py-3 w-full">
-            <Calendar className="w-5 h-5 text-slate-900" />
-            <input
-              className="bg-transparent border-none focus:outline-none w-full text-slate-800 placeholder:text-slate-500 font-medium text-sm md:text-base"
-              placeholder="Any time"
-              type="text"
-            />
-          </div>
-          <button className="bg-[#0f0f0f] text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-black transition-all md:ml-2 shadow-sm w-full md:w-auto">
-            Search
-          </button>
+          <div className="font-sans font-bold text-base text-[#555] tracking-[0.2em] mt-2">{loadingPercentage}%</div>
         </div>
+      )}
 
-        <div className="text-center mt-12 mb-10">
-          <p className="text-slate-800 text-lg font-medium">
-            <span className="font-bold">4,30,929</span> appointments booked today
+      <section id="hero" className="relative h-screen max-h-[800px] min-h-[600px] flex flex-col justify-end overflow-hidden rounded-[2.5rem] group cursor-none mb-16">
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover"></canvas>
+
+        <div className="absolute inset-0 bg-linear-to-br from-[#080808]/75 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-[#080808]/85 to-transparent pointer-events-none"></div>
+
+        <div className="relative z-10 px-6 lg:px-20 pb-20 max-w-3xl">
+
+          <h1 className="font-sans font-black text-[clamp(1.5rem,5vw,4rem)] leading-[0.88] tracking-[-0.01em] mb-6 text-white uppercase">
+            Slot<br /><em className="text-[#E8FF3A] not-italic">Booking</em>
+          </h1>
+          <p className="text-[#555] max-w-[340px] leading-[1.75] mb-10 font-light text-[0.92rem]">
+            Move your mouse left and right to scrub through the sequence. Every frame, yours to control.
           </p>
+          <a href="#explore" className="inline-flex items-center gap-2 bg-[#E8FF3A] text-black text-[0.6rem] font-bold tracking-[0.18em] uppercase px-5 py-2.5 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(232,255,58,0.28)] transition-all duration-200">
+            Explore Work &nbsp;→
+          </a>
         </div>
-        <div className="flex justify-center mb-4">
-          <button className="flex items-center gap-3 bg-white border border-slate-200 px-6 py-3 rounded-full font-bold text-slate-800 hover:bg-slate-50 transition-all shadow-sm">
-            Get the app
-            <QrCode className="w-5 h-5" />
-          </button>
+
+        <div className="absolute right-10 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col items-center gap-4">
+          <div className="text-[0.6rem] tracking-[0.28em] uppercase text-[#555] [writing-mode:vertical-lr] rotate-180">Scrub</div>
+          <div className="w-px h-[110px] bg-white/10 relative overflow-hidden">
+            <div className="absolute bottom-0 w-full bg-[#E8FF3A]" style={{ height: `${(currentFrame / (totalFrames > 0 ? totalFrames : 1)) * 100}%` }}></div>
+          </div>
+          <div className="font-sans font-bold text-[0.85rem] text-[#555] tracking-widest">
+            {String(currentFrame + 1).padStart(3, '0')}
+          </div>
         </div>
+
+        <div className="absolute bottom-10 right-12 z-20 hidden md:flex items-center gap-3 text-[0.65rem] tracking-[0.22em] uppercase text-[#555] animate-fade-hint">
+          <div className="w-[18px] h-[28px] border border-[#555] rounded-[9px] flex justify-center pt-1">
+            <div className="w-[2px] h-[5px] bg-[#E8FF3A] rounded-sm animate-mscroll"></div>
+          </div>
+          Move to scrub
+        </div>
+
+        <div ref={cursorRef} id="ag-cursor" className="fixed top-0 left-0 w-[10px] h-[10px] bg-[#E8FF3A] rounded-full pointer-events-none z-9999 mix-blend-difference opacity-0 group-hover:opacity-100 transition-[opacity,width,height] duration-150 will-change-transform"></div>
+        <div ref={cursorRingRef} id="ag-cursor-ring" className="fixed top-0 left-0 w-[36px] h-[36px] border border-[#e8ff3a59] rounded-full pointer-events-none z-9998 opacity-0 group-hover:opacity-100 transition-transform duration-80 ease-out will-change-transform"></div>
+      </section>
+    </>
+  );
+}
+
+// --- Booking Search Component ---
+function BookingSearch() {
+  return (
+    <section className="mb-16 max-w-5xl mx-auto w-full px-6">
+      <div className="flex flex-col md:flex-row items-center bg-white border border-slate-200 md:rounded-full rounded-2xl p-2 shadow-xl max-w-4xl mx-auto mt-8 gap-2 md:gap-0">
+        <div className="flex-[1.5] flex items-center gap-3 px-6 py-3 md:border-r border-slate-100 w-full">
+          <Search className="w-5 h-5 text-slate-900" />
+          <input
+            className="bg-transparent border-none focus:outline-none w-full text-slate-800 placeholder:text-slate-500 font-medium text-sm md:text-base"
+            placeholder="All treatments and venues"
+            type="text"
+          />
+        </div>
+        <div className="flex-1 flex items-center gap-3 px-6 py-3 md:border-r border-slate-100 w-full">
+          <MapPin className="w-5 h-5 text-slate-900" />
+          <input
+            className="bg-transparent border-none focus:outline-none w-full text-slate-800 font-medium text-sm md:text-base"
+            placeholder="Current location"
+            type="text"
+            defaultValue="Current location"
+          />
+        </div>
+        <div className="flex-1 flex items-center gap-3 px-6 py-3 w-full">
+          <Calendar className="w-5 h-5 text-slate-900" />
+          <input
+            className="bg-transparent border-none focus:outline-none w-full text-slate-800 placeholder:text-slate-500 font-medium text-sm md:text-base"
+            placeholder="Any time"
+            type="text"
+          />
+        </div>
+        <button className="bg-[#0f0f0f] text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-black transition-all md:ml-2 shadow-sm w-full md:w-auto">
+          Search
+        </button>
+      </div>
+
+      <div className="text-center mt-12 mb-10">
+        <p className="text-slate-800 text-lg font-medium">
+          <span className="font-bold">4,30,929</span> appointments booked today
+        </p>
+      </div>
+      <div className="flex justify-center mb-4">
+        <button className="flex items-center gap-3 bg-white border border-slate-200 px-6 py-3 rounded-full font-bold text-slate-800 hover:bg-slate-50 transition-all shadow-sm">
+          Get the app
+          <QrCode className="w-5 h-5" />
+        </button>
       </div>
     </section>
   );
@@ -235,8 +385,8 @@ function Trending() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {trendingData.map((item, i) => (
-          <Link 
-            key={i} 
+          <Link
+            key={i}
             href={`/marketplace/${item.name.toLowerCase().replace(/\s+/g, '-')}`}
             className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 flex flex-col"
           >
@@ -417,7 +567,8 @@ export default function LuxeMarketplace() {
     <div className="min-h-screen bg-white font-sans text-slate-900">
       <Header />
       <main className="max-w-7xl mx-auto px-6 py-10">
-        <Hero />
+        <AntigravityHero />
+        <BookingSearch />
         <Categories />
         <Trending />
         <AppCTA />
