@@ -3,18 +3,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
   Search,
   MapPin,
   Calendar,
-  QrCode,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Star,
-  CheckCircle,
-  Zap,
+  QrCode,
+  Send,
+  ArrowRight,
   Heart,
   Apple,
   Play,
@@ -22,8 +21,26 @@ import {
   Globe,
   Share2,
   Mail,
-  Send,
+  Star,
+  CheckCircle,
+  Zap
 } from 'lucide-react';
+
+const scrollbarStyles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+`;
 
 // --- Header Component ---
 function Header() {
@@ -238,6 +255,19 @@ function RollingDigit({ digit }: { digit: string }) {
 }
 
 function RollingNumber({ value }: { value: number }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  if (!mounted) {
+    // Return the same string the server would render, using a stable format
+    return <span className="font-bold flex items-center justify-center">430,929</span>;
+  }
+
   const digits = value.toLocaleString().split('');
   
   return (
@@ -249,9 +279,314 @@ function RollingNumber({ value }: { value: number }) {
   );
 }
 
+// --- Date & Time Picker Component ---
+function DateTimePicker({ 
+  isOpen, 
+  onClose, 
+  selectedDate, 
+  setSelectedDate, 
+  selectedTime, 
+  setSelectedTime 
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+  selectedTime: string;
+  setSelectedTime: (time: string) => void;
+}) {
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [showStartTimes, setShowStartTimes] = useState(false);
+  const [showEndTimes, setShowEndTimes] = useState(false);
+  const [customStartTime, setCustomStartTime] = useState<string | null>(null);
+  const [customEndTime, setCustomEndTime] = useState<string | null>(null);
+
+  const times = Array.from({ length: 48 }, (_, i) => {
+    const hours = Math.floor(i / 2);
+    const minutes = i % 2 === 0 ? '00' : '30';
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const h = hours % 12 === 0 ? 12 : hours % 12;
+    return `${h}:${minutes} ${ampm}`;
+  });
+
+  const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
+
+  const renderCalendar = () => {
+    const totalDays = daysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+    const startDay = (firstDayOfMonth(currentMonth.getFullYear(), currentMonth.getMonth()) + 6) % 7; // Adjust to Mon start
+    const days = [];
+
+    // Empty slots for start of month
+    for (let i = 0; i < startDay; i++) {
+      days.push(<div key={`empty-${i}`} className="h-10 w-10"></div>);
+    }
+
+    // Actual days
+    for (let i = 1; i <= totalDays; i++) {
+      const isSelected = selectedDate.getDate() === i && 
+                       selectedDate.getMonth() === currentMonth.getMonth() &&
+                       selectedDate.getFullYear() === currentMonth.getFullYear();
+      
+      const isToday = today.getDate() === i && 
+                      today.getMonth() === currentMonth.getMonth() && 
+                      today.getFullYear() === currentMonth.getFullYear();
+
+      days.push(
+        <button
+          key={i}
+          onClick={() => setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i))}
+          className={`h-10 w-10 flex flex-col items-center justify-center rounded-full text-sm font-bold transition-all relative ${
+            isSelected ? 'bg-black text-white' : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
+          }`}
+        >
+          {i}
+          {isToday && !isSelected && (
+            <span className="absolute bottom-1 w-1 h-1 bg-black rounded-full"></span>
+          )}
+        </button>
+      );
+    }
+
+    return days;
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+  };
+
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-full left-0 mt-4 bg-white border border-slate-200 rounded-2xl shadow-2xl z-100 w-[600px]"
+        >
+          <div className="flex bg-white">
+            {/* Sidebar */}
+            <div className="w-[180px] border-r border-slate-50 p-4 space-y-3 bg-slate-50/30">
+              <button 
+                onClick={() => {
+                  setSelectedDate(today);
+                  setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+                }}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                  selectedDate.toDateString() === today.toDateString() 
+                  ? 'border-slate-900 bg-white shadow-sm' 
+                  : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
+                }`}
+              >
+                <div className="text-sm font-bold text-slate-900">Today</div>
+                <div className="text-xs text-slate-500 font-medium">{formatDate(today)}</div>
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedDate(tomorrow);
+                  setCurrentMonth(new Date(tomorrow.getFullYear(), tomorrow.getMonth(), 1));
+                }}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                  selectedDate.toDateString() === tomorrow.toDateString() 
+                  ? 'border-slate-900 bg-white shadow-sm' 
+                  : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
+                }`}
+              >
+                <div className="text-sm font-bold text-slate-900">Tomorrow</div>
+                <div className="text-xs text-slate-500 font-medium">{formatDate(tomorrow)}</div>
+              </button>
+            </div>
+
+            {/* Calendar */}
+            <div className="flex-1 p-6">
+              <div className="flex items-center justify-between mb-8">
+                <button 
+                  onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                  className="p-1 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="font-bold text-slate-900">
+                  {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                </div>
+                <button 
+                  onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                  className="p-1 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-y-2 text-center mb-4">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+                  <div key={day} className="text-xs font-bold text-slate-400 uppercase tracking-wider">{day}</div>
+                ))}
+                {renderCalendar()}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-slate-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="text-sm font-bold text-slate-900">Select time</div>
+            <div className="flex flex-wrap gap-2">
+              {['Any time', 'Morning', 'Afternoon', 'Evening', 'Custom'].map(slot => (
+                <button
+                  key={slot}
+                  onClick={() => {
+                    setSelectedTime(slot);
+                    if (slot !== 'Custom') {
+                      onClose();
+                    }
+                  }}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
+                    selectedTime === slot 
+                    ? 'border-black bg-white text-black shadow-sm ring-2 ring-black/5' 
+                    : 'border-slate-100 bg-white text-slate-500 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="whitespace-nowrap">{slot}</div>
+                  {slot !== 'Any time' && slot !== 'Custom' && (
+                    <div className="text-[10px] opacity-60 font-medium">
+                      {slot === 'Morning' ? '9am - 12pm' : slot === 'Afternoon' ? '12pm - 5pm' : '5pm - 12am'}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Custom Time Selection Columns */}
+          <AnimatePresence>
+            {selectedTime === 'Custom' && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="px-6 pb-6"
+              >
+                <div className="flex gap-4 relative" onClick={(e) => e.stopPropagation()}>
+                  {/* Start Time Dropdown */}
+                  <div className="flex-1 relative">
+                    <button 
+                      onClick={() => {
+                        setShowStartTimes(!showStartTimes);
+                        setShowEndTimes(false);
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 group hover:border-slate-400 transition-all font-bold"
+                    >
+                      <span className={`text-sm ${customStartTime ? 'text-slate-900' : 'text-slate-400'}`}>
+                        {customStartTime || 'Select start time'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showStartTimes ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {showStartTimes && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-[200px] overflow-y-auto custom-scrollbar"
+                        >
+                          {times.map(t => (
+                            <button
+                              key={t}
+                              onClick={() => {
+                                setCustomStartTime(t);
+                                setShowStartTimes(false);
+                              }}
+                              className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-800"
+                            >
+                              {t}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* End Time Dropdown */}
+                  <div className="flex-1 relative">
+                    <button 
+                      onClick={() => {
+                        setShowEndTimes(!showEndTimes);
+                        setShowStartTimes(false);
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 group hover:border-slate-400 transition-all font-bold"
+                    >
+                      <span className={`text-sm ${customEndTime ? 'text-slate-900' : 'text-slate-400'}`}>
+                        {customEndTime || 'Select end time'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showEndTimes ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {showEndTimes && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-[200px] overflow-y-auto custom-scrollbar"
+                        >
+                          {times.map(t => (
+                            <button
+                              key={t}
+                              onClick={() => {
+                                setCustomEndTime(t);
+                                setShowEndTimes(false);
+                                if (customStartTime) onClose();
+                              }}
+                              className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-800"
+                            >
+                              {t}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // --- Booking Search Component ---
 function BookingSearch() {
   const [bookedCount, setBookedCount] = useState(430929);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('Any time');
+  const [mounted, setMounted] = useState(false);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setIsDatePickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -260,8 +595,25 @@ function BookingSearch() {
     return () => clearInterval(interval);
   }, []);
 
+  if (!mounted) {
+    return (
+      <section className="mb-16 max-w-5xl mx-auto w-full px-6 relative z-50">
+        <div className="flex flex-col md:flex-row items-center bg-white border border-slate-200 md:rounded-full rounded-2xl p-2 shadow-xl max-w-4xl mx-auto mt-8 gap-2 md:gap-0 min-h-[74px]">
+          <div className="flex-[1.5] px-6"></div>
+          <div className="flex-1 px-6"></div>
+          <div className="flex-1 px-6"></div>
+          <div className="px-8 w-[120px]"></div>
+        </div>
+      </section>
+    );
+  }
+
+  const formattedValue = selectedTimeSlot === 'Any time' 
+    ? (selectedDate.toDateString() === new Date().toDateString() ? 'Today, anytime' : `${selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}, anytime`)
+    : `${selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}, ${selectedTimeSlot}`;
+
   return (
-    <section className="mb-16 max-w-5xl mx-auto w-full px-6">
+    <section className="mb-16 max-w-5xl mx-auto w-full px-6 relative z-50">
       <div className="flex flex-col md:flex-row items-center bg-white border border-slate-200 md:rounded-full rounded-2xl p-2 shadow-xl max-w-4xl mx-auto mt-8 gap-2 md:gap-0">
         <div className="flex-[1.5] flex items-center gap-3 px-6 py-3 md:border-r border-slate-100 w-full">
           <Search className="w-5 h-5 text-slate-900" />
@@ -280,12 +632,29 @@ function BookingSearch() {
             defaultValue="Current location"
           />
         </div>
-        <div className="flex-1 flex items-center gap-3 px-6 py-3 w-full">
-          <Calendar className="w-5 h-5 text-slate-900" />
-          <input
-            className="bg-transparent border-none focus:outline-none w-full text-slate-800 placeholder:text-slate-500 font-medium text-sm md:text-base"
-            placeholder="Any time"
-            type="text"
+        <div 
+          ref={datePickerRef}
+          className="flex-1 flex items-center gap-3 px-6 py-3 w-full relative cursor-pointer group"
+          onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+        >
+          <Calendar className="w-5 h-5 text-slate-900 group-hover:scale-110 transition-transform" />
+          <div className="flex-1">
+            <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">Time</div>
+            <div className="text-slate-800 font-bold text-sm md:text-base">
+              {formattedValue}
+            </div>
+          </div>
+
+          <DateTimePicker 
+            isOpen={isDatePickerOpen}
+            onClose={() => setIsDatePickerOpen(false)}
+            selectedDate={selectedDate}
+            setSelectedDate={(d) => {
+              setSelectedDate(d);
+              // Option: auto-close if time slot is already set
+            }}
+            selectedTime={selectedTimeSlot}
+            setSelectedTime={setSelectedTimeSlot}
           />
         </div>
         <button className="bg-[#0f0f0f] text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-black transition-all md:ml-2 shadow-sm w-full md:w-auto">
@@ -610,6 +979,7 @@ function Footer() {
 export default function LuxeMarketplace() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
+      <style>{scrollbarStyles}</style>
       <Header />
       <main className="max-w-7xl mx-auto px-6 py-10">
         <AntigravityHero />
