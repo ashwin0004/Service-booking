@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -7,9 +7,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Sign In | Arcana",
-  description: "Sign in to Service Booking",
+  title: "Luminous Admin | Service Suite",
+  description: "Advanced marketplace monitoring and management.",
 };
 
 export default function RootLayout({
@@ -20,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body
-        className={`${inter.variable} font-inter antialiased bg-background-light dark:bg-background-dark`}
+        className={`${inter.variable} ${manrope.variable} font-inter antialiased bg-background-light dark:bg-background-dark`}
       >
         {children}
       </body>

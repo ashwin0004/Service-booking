@@ -23,7 +23,8 @@ import {
   Mail,
   Star,
   CheckCircle,
-  Zap
+  Zap,
+  LayoutDashboard
 } from 'lucide-react';
 
 const scrollbarStyles = `
@@ -52,6 +53,10 @@ function Header() {
         </div>
       </div>
       <div className="flex items-center gap-4">
+        <Link href="/admin" className="hidden sm:flex items-center gap-2 px-4 py-2.5 text-slate-600 hover:text-slate-900 font-bold transition-all text-sm group">
+          <LayoutDashboard className="w-4 h-4 group-hover:text-primary transition-colors" />
+          Admin
+        </Link>
         <button className="hidden sm:flex items-center px-6 py-2.5 border border-slate-200 rounded-full text-sm font-bold hover:bg-slate-50 transition-all">
           List your business
         </button>
@@ -237,7 +242,7 @@ function RollingDigit({ digit }: { digit: string }) {
   return (
     <span className="inline-block h-[1.2em] overflow-hidden leading-none align-bottom">
       {isNumber ? (
-        <span 
+        <span
           className="flex flex-col transition-transform duration-800 ease-[cubic-bezier(0.45,0.05,0.55,0.95)]"
           style={{ transform: `translateY(-${(numDigit) * 5}%)` }} // numDigit * (100 / 20)
         >
@@ -269,7 +274,7 @@ function RollingNumber({ value }: { value: number }) {
   }
 
   const digits = value.toLocaleString().split('');
-  
+
   return (
     <span className="font-bold flex items-center justify-center">
       {digits.map((d, i) => (
@@ -280,13 +285,13 @@ function RollingNumber({ value }: { value: number }) {
 }
 
 // --- Date & Time Picker Component ---
-function DateTimePicker({ 
-  isOpen, 
-  onClose, 
-  selectedDate, 
-  setSelectedDate, 
-  selectedTime, 
-  setSelectedTime 
+function DateTimePicker({
+  isOpen,
+  onClose,
+  selectedDate,
+  setSelectedDate,
+  selectedTime,
+  setSelectedTime
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -325,21 +330,20 @@ function DateTimePicker({
 
     // Actual days
     for (let i = 1; i <= totalDays; i++) {
-      const isSelected = selectedDate.getDate() === i && 
-                       selectedDate.getMonth() === currentMonth.getMonth() &&
-                       selectedDate.getFullYear() === currentMonth.getFullYear();
-      
-      const isToday = today.getDate() === i && 
-                      today.getMonth() === currentMonth.getMonth() && 
-                      today.getFullYear() === currentMonth.getFullYear();
+      const isSelected = selectedDate.getDate() === i &&
+        selectedDate.getMonth() === currentMonth.getMonth() &&
+        selectedDate.getFullYear() === currentMonth.getFullYear();
+
+      const isToday = today.getDate() === i &&
+        today.getMonth() === currentMonth.getMonth() &&
+        today.getFullYear() === currentMonth.getFullYear();
 
       days.push(
         <button
           key={i}
           onClick={() => setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i))}
-          className={`h-10 w-10 flex flex-col items-center justify-center rounded-full text-sm font-bold transition-all relative ${
-            isSelected ? 'bg-black text-white' : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
-          }`}
+          className={`h-10 w-10 flex flex-col items-center justify-center rounded-full text-sm font-bold transition-all relative ${isSelected ? 'bg-black text-white' : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
+            }`}
         >
           {i}
           {isToday && !isSelected && (
@@ -373,30 +377,28 @@ function DateTimePicker({
           <div className="flex bg-white">
             {/* Sidebar */}
             <div className="w-[180px] border-r border-slate-50 p-4 space-y-3 bg-slate-50/30">
-              <button 
+              <button
                 onClick={() => {
                   setSelectedDate(today);
                   setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
                 }}
-                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                  selectedDate.toDateString() === today.toDateString() 
-                  ? 'border-slate-900 bg-white shadow-sm' 
-                  : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
-                }`}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedDate.toDateString() === today.toDateString()
+                    ? 'border-slate-900 bg-white shadow-sm'
+                    : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
+                  }`}
               >
                 <div className="text-sm font-bold text-slate-900">Today</div>
                 <div className="text-xs text-slate-500 font-medium">{formatDate(today)}</div>
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setSelectedDate(tomorrow);
                   setCurrentMonth(new Date(tomorrow.getFullYear(), tomorrow.getMonth(), 1));
                 }}
-                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                  selectedDate.toDateString() === tomorrow.toDateString() 
-                  ? 'border-slate-900 bg-white shadow-sm' 
-                  : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
-                }`}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedDate.toDateString() === tomorrow.toDateString()
+                    ? 'border-slate-900 bg-white shadow-sm'
+                    : 'border-transparent bg-white/50 hover:bg-white hover:border-slate-200'
+                  }`}
               >
                 <div className="text-sm font-bold text-slate-900">Tomorrow</div>
                 <div className="text-xs text-slate-500 font-medium">{formatDate(tomorrow)}</div>
@@ -406,7 +408,7 @@ function DateTimePicker({
             {/* Calendar */}
             <div className="flex-1 p-6">
               <div className="flex items-center justify-between mb-8">
-                <button 
+                <button
                   onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
                   className="p-1 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
                 >
@@ -415,7 +417,7 @@ function DateTimePicker({
                 <div className="font-bold text-slate-900">
                   {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </div>
-                <button 
+                <button
                   onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
                   className="p-1 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
                 >
@@ -445,11 +447,10 @@ function DateTimePicker({
                       onClose();
                     }
                   }}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
-                    selectedTime === slot 
-                    ? 'border-black bg-white text-black shadow-sm ring-2 ring-black/5' 
-                    : 'border-slate-100 bg-white text-slate-500 hover:border-slate-300'
-                  }`}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${selectedTime === slot
+                      ? 'border-black bg-white text-black shadow-sm ring-2 ring-black/5'
+                      : 'border-slate-100 bg-white text-slate-500 hover:border-slate-300'
+                    }`}
                 >
                   <div className="whitespace-nowrap">{slot}</div>
                   {slot !== 'Any time' && slot !== 'Custom' && (
@@ -465,7 +466,7 @@ function DateTimePicker({
           {/* Custom Time Selection Columns */}
           <AnimatePresence>
             {selectedTime === 'Custom' && (
-              <motion.div 
+              <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -474,7 +475,7 @@ function DateTimePicker({
                 <div className="flex gap-4 relative" onClick={(e) => e.stopPropagation()}>
                   {/* Start Time Dropdown */}
                   <div className="flex-1 relative">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowStartTimes(!showStartTimes);
                         setShowEndTimes(false);
@@ -486,7 +487,7 @@ function DateTimePicker({
                       </span>
                       <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showStartTimes ? 'rotate-180' : ''}`} />
                     </button>
-                    
+
                     <AnimatePresence>
                       {showStartTimes && (
                         <motion.div
@@ -514,7 +515,7 @@ function DateTimePicker({
 
                   {/* End Time Dropdown */}
                   <div className="flex-1 relative">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowEndTimes(!showEndTimes);
                         setShowStartTimes(false);
@@ -575,7 +576,7 @@ function BookingSearch() {
     const frame = requestAnimationFrame(() => {
       setMounted(true);
     });
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
         setIsDatePickerOpen(false);
@@ -608,7 +609,7 @@ function BookingSearch() {
     );
   }
 
-  const formattedValue = selectedTimeSlot === 'Any time' 
+  const formattedValue = selectedTimeSlot === 'Any time'
     ? (selectedDate.toDateString() === new Date().toDateString() ? 'Today, anytime' : `${selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}, anytime`)
     : `${selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}, ${selectedTimeSlot}`;
 
@@ -629,10 +630,10 @@ function BookingSearch() {
             className="bg-transparent border-none focus:outline-none w-full text-slate-800 font-medium text-sm md:text-base"
             placeholder="Current location"
             type="text"
-            defaultValue="Current location"
+
           />
         </div>
-        <div 
+        <div
           ref={datePickerRef}
           className="flex-1 flex items-center gap-3 px-6 py-3 w-full relative cursor-pointer group"
           onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
@@ -645,7 +646,7 @@ function BookingSearch() {
             </div>
           </div>
 
-          <DateTimePicker 
+          <DateTimePicker
             isOpen={isDatePickerOpen}
             onClose={() => setIsDatePickerOpen(false)}
             selectedDate={selectedDate}
