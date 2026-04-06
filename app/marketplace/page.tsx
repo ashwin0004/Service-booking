@@ -121,7 +121,7 @@ function AntigravityHero() {
     }
 
     ctx.clearRect(0, 0, rect.width, rect.height);
-    ctx.filter = 'brightness(0.85)';
+    ctx.filter = 'brightness(1.3)';
     ctx.drawImage(img, x, y, renderWidth, renderHeight);
     ctx.filter = 'none';
   };
@@ -162,7 +162,7 @@ function AntigravityHero() {
     <>
       {loadingPercentage < 100 && (
         <div className="fixed inset-0 bg-[#080808] z-1000 flex flex-col items-center justify-center gap-8 transition-opacity duration-700">
-          <div className="font-sans font-bold text-5xl text-[#E8FF3A] tracking-[0.2em] mb-4">ANTIGRAVITY</div>
+          <div className="font-sans font-bold text-5xl text-[#E8FF3A] tracking-[0.2em] mb-4">Slot Booking</div>
           <div className="w-[180px] h-px bg-white/10 relative">
             <div className="absolute top-0 left-0 h-full bg-[#E8FF3A] transition-[width] duration-75" style={{ width: `${Math.min(loadingPercentage, 100)}%` }}></div>
           </div>
@@ -173,20 +173,15 @@ function AntigravityHero() {
       <section id="hero" className="relative h-screen max-h-[800px] min-h-[600px] flex flex-col justify-end overflow-hidden rounded-[2.5rem] group cursor-none mb-16">
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover"></canvas>
 
-        <div className="absolute inset-0 bg-linear-to-br from-[#080808]/75 to-transparent pointer-events-none"></div>
-        <div className="absolute inset-0 bg-linear-to-t from-[#080808]/85 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-[#080808]/40 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-[#080808]/50 to-transparent pointer-events-none"></div>
 
         <div className="relative z-10 px-6 lg:px-20 pb-20 max-w-3xl">
 
           <h1 className="font-sans font-black text-[clamp(1.5rem,5vw,4rem)] leading-[0.88] tracking-[-0.01em] mb-6 text-white uppercase">
             Slot<br /><em className="text-[#E8FF3A] not-italic">Booking</em>
           </h1>
-          <p className="text-[#555] max-w-[340px] leading-[1.75] mb-10 font-light text-[0.92rem]">
-            Move your mouse left and right to scrub through the sequence. Every frame, yours to control.
-          </p>
-          <a href="#explore" className="inline-flex items-center gap-2 bg-[#E8FF3A] text-black text-[0.6rem] font-bold tracking-[0.18em] uppercase px-5 py-2.5 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(232,255,58,0.28)] transition-all duration-200">
-            Explore Work &nbsp;→
-          </a>
+
         </div>
 
         <div className="absolute right-10 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col items-center gap-4">

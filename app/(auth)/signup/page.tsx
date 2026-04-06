@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen font-display antialiased bg-white">
-      {/* Left Side: Login Form */}
+      {/* Left Side: Signup Form */}
       <div className="flex w-full flex-col justify-center px-8 py-12 lg:w-[45%] lg:px-24 bg-white">
         <div className="mx-auto w-full max-w-[420px]">
           {/* Logo */}
@@ -36,11 +36,31 @@ export default function LoginPage() {
 
           <div className="mb-8">
             <h1 className="text-4xl font-black text-[#0f172a] tracking-tight">
-              Sign In
+              Create Account
             </h1>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5" method="POST">
+            <div>
+              <label
+                className="block text-sm font-medium text-[#0f172a]"
+                htmlFor="full-name"
+              >
+                Full Name
+              </label>
+              <div className="mt-2">
+                <input
+                  autoComplete="name"
+                  className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-[#0f172a] placeholder-gray-400 focus:border-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#0f172a]"
+                  id="full-name"
+                  name="full-name"
+                  placeholder="John Doe"
+                  required
+                  type="text"
+                />
+              </div>
+            </div>
+
             <div>
               <label
                 className="block text-sm font-medium text-[#0f172a]"
@@ -62,25 +82,15 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <label
-                  className="block text-sm font-medium text-[#0f172a]"
-                  htmlFor="password"
-                >
-                  Password
-                </label>
-                <div className="text-sm">
-                  <Link
-                    className="font-medium text-[#0f172a] hover:underline"
-                    href="#"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-              </div>
+              <label
+                className="block text-sm font-medium text-[#0f172a]"
+                htmlFor="password"
+              >
+                Password
+              </label>
               <div className="mt-2 relative">
                 <input
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   className="block w-full rounded-lg border border-gray-200 px-4 py-3 pr-10 text-sm text-[#0f172a] placeholder-gray-400 focus:border-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#0f172a]"
                   id="password"
                   name="password"
@@ -102,27 +112,12 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center pt-1">
-              <input
-                className="h-4 w-4 rounded border-gray-300 text-[#0f172a] focus:ring-[#0f172a]"
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-              />
-              <label
-                className="ml-3 block text-sm text-[#0f172a]"
-                htmlFor="remember-me"
-              >
-                Remember me
-              </label>
-            </div>
-
             <div className="pt-2">
               <button
                 className="flex w-full justify-center rounded-lg bg-[#18181b] px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-black transition-colors"
                 type="submit"
               >
-                Sign In
+                Sign Up
               </button>
             </div>
           </form>
@@ -134,7 +129,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-white px-4 text-gray-500">
-                  Or continue with
+                  Or sign up with
                 </span>
               </div>
             </div>
@@ -179,22 +174,20 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?{" "}
+            Already have an account?{" "}
             <Link
               className="font-semibold text-[#0f172a] hover:underline"
-              href="/signup"
+              href="/login"
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Right Side: Aesthetic Dark Panel */}
+      {/* Right Side: Aesthetic Dark Panel (Identical) */}
       <div className="relative hidden w-0 flex-1 lg:block overflow-hidden bg-[#1a202c]">
-        {/* Background with Modern Abstract Shapes & Glow */}
         <div className="absolute inset-0 z-0 bg-linear-to-br from-[#1e293b] to-[#0f172a]">
-          {/* Hero Image */}
           <div className="absolute inset-0 opacity-40 mix-blend-overlay">
             <Image
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3c4yMBG4aIDcSXa6eY4mtHUzraeOuilEAiJ3okRGcVUcvgc6hPs-T_-O86KWM5g2F920wky47pLElhkWao6gZsHyGX4URENPHHni83-4lOHrLTag-4szW_LA64oEwxucPpSoLqqLOoNveOxcQGz_HUSmu6DiNYbsxbFchnGGz--QbTIQbDgaORKeLwHEucGsnOgstVC3JLYgIC4E7QbUH24MrtLnURf01CiWhnCZMffMw0B4AvMJJc8mBeKg3o3M44ox5y667wZk"
@@ -219,7 +212,6 @@ export default function LoginPage() {
 
             <div className="w-full h-px bg-white/10 mb-10"></div>
 
-            {/* Stats or Features */}
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <p className="text-3xl font-bold text-white">Real-time</p>
@@ -242,7 +234,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Bottom Footer */}
           <div className="absolute bottom-10 left-12 flex gap-6 text-sm text-gray-400">
             <Link className="hover:text-white transition-colors" href="#">
               Privacy Policy
