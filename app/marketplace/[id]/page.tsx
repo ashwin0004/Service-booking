@@ -39,11 +39,9 @@ export default function SereneWellnessSpa() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-8">
             <Link href="/marketplace" className="flex items-center gap-2 cursor-pointer">
-              <span className="material-symbols-outlined text-black text-3xl">
-                spa
-              </span>
+
               <h1 className="text-xl font-bold tracking-tight text-black">
-                SERENE
+                SLOT
               </h1>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
@@ -63,9 +61,7 @@ export default function SereneWellnessSpa() {
           </div>
           <div className="flex-1 max-w-md hidden sm:block">
             <div className="relative group">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-black/40 group-focus-within:text-black">
-                search
-              </span>
+
               <input
                 className="w-full pl-10 pr-4 py-2 bg-black/5 border-none rounded-lg focus:ring-2 focus:ring-black/20 text-sm"
                 placeholder="Search treatments or venues"
@@ -77,9 +73,7 @@ export default function SereneWellnessSpa() {
             <button className="hidden lg:block text-sm font-semibold px-4 py-2 hover:bg-black/5 rounded-lg transition-colors">
               Partner with us
             </button>
-            <button className="bg-black text-white text-sm font-bold px-6 py-2 rounded-lg hover:bg-black/90 transition-all">
-              Log In
-            </button>
+
           </div>
         </div>
       </header>
@@ -121,7 +115,7 @@ export default function SereneWellnessSpa() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8 space-y-8">
-            <motion.section 
+            <motion.section
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -179,7 +173,7 @@ export default function SereneWellnessSpa() {
               </a>
             </nav>
 
-            <motion.section 
+            <motion.section
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -200,11 +194,10 @@ export default function SereneWellnessSpa() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedTime(slot.time)}
-                    className={`flex-none w-32 p-4 rounded-xl border-2 transition-all text-center space-y-1 ${
-                      selectedTime === slot.time
-                        ? 'border-black bg-black'
-                        : 'border-black/5 bg-white hover:border-black/20'
-                    }`}
+                    className={`flex-none w-32 p-4 rounded-xl border-2 transition-all text-center space-y-1 ${selectedTime === slot.time
+                      ? 'border-black bg-black'
+                      : 'border-black/5 bg-white hover:border-black/20'
+                      }`}
                   >
                     <div className={`font-bold text-sm ${selectedTime === slot.time ? 'text-white' : 'text-black'}`}>{slot.time}</div>
                     <div className={`text-[10px] font-bold tracking-wider ${selectedTime === slot.time ? 'text-white/60' : 'text-green-600'}`}>
@@ -215,12 +208,12 @@ export default function SereneWellnessSpa() {
               </div>
             </motion.section>
 
-            <motion.section 
+            <motion.section
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-10" 
+              className="space-y-10"
               id="services"
             >
               <div className="space-y-6">
@@ -230,11 +223,10 @@ export default function SereneWellnessSpa() {
                     <motion.div
                       key={service.id}
                       whileHover={{ x: 5 }}
-                      className={`group flex items-center justify-between p-4 rounded-xl border transition-all ${
-                        selectedServiceIds.includes(service.id)
-                          ? 'border-black bg-black/5'
-                          : 'border-black/10 hover:border-black/30'
-                      }`}
+                      className={`group flex items-center justify-between p-4 rounded-xl border transition-all ${selectedServiceIds.includes(service.id)
+                        ? 'border-black bg-black/5'
+                        : 'border-black/10 hover:border-black/30'
+                        }`}
                     >
                       <div className="space-y-1">
                         <h4 className="font-bold">{service.name}</h4>
@@ -243,11 +235,10 @@ export default function SereneWellnessSpa() {
                       </div>
                       <button
                         onClick={() => toggleService(service.id)}
-                        className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${
-                          selectedServiceIds.includes(service.id)
-                            ? 'bg-black text-white'
-                            : 'bg-black/5 hover:bg-black hover:text-white text-black'
-                        }`}
+                        className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${selectedServiceIds.includes(service.id)
+                          ? 'bg-black text-white'
+                          : 'bg-black/5 hover:bg-black hover:text-white text-black'
+                          }`}
                       >
                         {selectedServiceIds.includes(service.id) ? 'Added' : 'Book'}
                       </button>
@@ -262,11 +253,10 @@ export default function SereneWellnessSpa() {
                     <motion.div
                       key={service.id}
                       whileHover={{ x: 5 }}
-                      className={`group flex items-center justify-between p-4 rounded-xl border transition-all ${
-                        selectedServiceIds.includes(service.id)
-                          ? 'border-black bg-black/5'
-                          : 'border-black/10 hover:border-black/30'
-                      }`}
+                      className={`group flex items-center justify-between p-4 rounded-xl border transition-all ${selectedServiceIds.includes(service.id)
+                        ? 'border-black bg-black/5'
+                        : 'border-black/10 hover:border-black/30'
+                        }`}
                     >
                       <div className="space-y-1">
                         <h4 className="font-bold">{service.name}</h4>
@@ -275,11 +265,10 @@ export default function SereneWellnessSpa() {
                       </div>
                       <button
                         onClick={() => toggleService(service.id)}
-                        className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${
-                          selectedServiceIds.includes(service.id)
-                            ? 'bg-black text-white'
-                            : 'bg-black/5 hover:bg-black hover:text-white text-black'
-                        }`}
+                        className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${selectedServiceIds.includes(service.id)
+                          ? 'bg-black text-white'
+                          : 'bg-black/5 hover:bg-black hover:text-white text-black'
+                          }`}
                       >
                         {selectedServiceIds.includes(service.id) ? 'Added' : 'Book'}
                       </button>
@@ -413,11 +402,10 @@ export default function SereneWellnessSpa() {
                     <motion.button
                       whileHover={selectedServices.length > 0 ? { scale: 1.02 } : {}}
                       whileTap={selectedServices.length > 0 ? { scale: 0.98 } : {}}
-                      className={`w-full py-3 rounded-lg font-bold transition-all ${
-                        selectedServices.length > 0
-                          ? 'bg-black text-white hover:bg-black/90 shadow-lg shadow-black/10'
-                          : 'bg-black/5 text-black/40 cursor-not-allowed'
-                      }`}
+                      className={`w-full py-3 rounded-lg font-bold transition-all ${selectedServices.length > 0
+                        ? 'bg-black text-white hover:bg-black/90 shadow-lg shadow-black/10'
+                        : 'bg-black/5 text-black/40 cursor-not-allowed'
+                        }`}
                       disabled={selectedServices.length === 0}
                     >
                       Checkout
@@ -463,7 +451,7 @@ export default function SereneWellnessSpa() {
           </aside>
         </div>
 
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -548,19 +536,7 @@ export default function SereneWellnessSpa() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
             <div className="col-span-2 lg:col-span-1 space-y-6">
               <div className="flex items-center gap-2 cursor-pointer">
-                <span className="material-symbols-outlined text-black text-3xl">spa</span>
-                <h1 className="text-xl font-bold tracking-tight text-black">SERENE</h1>
-              </div>
-              <div className="flex gap-4">
-                <a className="text-black/40 hover:text-black transition-colors" href="#">
-                  <span className="material-symbols-outlined">social_leaderboard</span>
-                </a>
-                <a className="text-black/40 hover:text-black transition-colors" href="#">
-                  <span className="material-symbols-outlined">photo_camera</span>
-                </a>
-                <a className="text-black/40 hover:text-black transition-colors" href="#">
-                  <span className="material-symbols-outlined">chat</span>
-                </a>
+                <h1 className="text-xl font-bold tracking-tight text-black">SLOT</h1>
               </div>
             </div>
             <div className="space-y-4">

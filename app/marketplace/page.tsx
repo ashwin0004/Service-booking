@@ -208,8 +208,58 @@ function AntigravityHero() {
   );
 }
 
+// --- Rolling Number Components ---
+function RollingDigit({ digit }: { digit: string }) {
+  const isNumber = !isNaN(parseInt(digit));
+  const numDigit = isNumber ? parseInt(digit) : 0;
+
+  // We repeat 0-9 twice to allow for smoother "infinite" rolling if needed,
+  // matching the user's "film strip" description.
+  const strip = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  return (
+    <span className="inline-block h-[1.2em] overflow-hidden leading-none align-bottom">
+      {isNumber ? (
+        <span 
+          className="flex flex-col transition-transform duration-800 ease-[cubic-bezier(0.45,0.05,0.55,0.95)]"
+          style={{ transform: `translateY(-${(numDigit) * 5}%)` }} // numDigit * (100 / 20)
+        >
+          {strip.map((n, idx) => (
+            <span key={idx} className="h-[1.2em] flex items-center justify-center">
+              {n}
+            </span>
+          ))}
+        </span>
+      ) : (
+        <span className="inline-block px-0.5">{digit}</span>
+      )}
+    </span>
+  );
+}
+
+function RollingNumber({ value }: { value: number }) {
+  const digits = value.toLocaleString().split('');
+  
+  return (
+    <span className="font-bold flex items-center justify-center">
+      {digits.map((d, i) => (
+        <RollingDigit key={i} digit={d} />
+      ))}
+    </span>
+  );
+}
+
 // --- Booking Search Component ---
 function BookingSearch() {
+  const [bookedCount, setBookedCount] = useState(430929);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBookedCount(prev => prev + Math.floor(Math.random() * 3) + 1);
+    }, 3000 + Math.random() * 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="mb-16 max-w-5xl mx-auto w-full px-6">
       <div className="flex flex-col md:flex-row items-center bg-white border border-slate-200 md:rounded-full rounded-2xl p-2 shadow-xl max-w-4xl mx-auto mt-8 gap-2 md:gap-0">
@@ -243,9 +293,9 @@ function BookingSearch() {
         </button>
       </div>
 
-      <div className="text-center mt-12 mb-10">
-        <p className="text-slate-800 text-lg font-medium">
-          <span className="font-bold">4,30,929</span> appointments booked today
+      <div className="text-center mt-12 mb-10 h-8 flex items-center justify-center">
+        <p className="text-slate-800 text-lg font-medium flex items-center gap-2">
+          <RollingNumber value={bookedCount} /> appointments booked today
         </p>
       </div>
       <div className="flex justify-center mb-4">
