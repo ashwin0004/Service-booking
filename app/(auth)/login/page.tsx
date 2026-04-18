@@ -182,7 +182,7 @@ export default function LoginPage() {
             Not a member?{" "}
             <Link
               className="font-semibold text-[#0f172a] hover:underline"
-              href="#"
+              href="/signup"
             >
               Sign up
             </Link>

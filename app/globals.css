@@ -7,14 +7,43 @@
   --color-primary: #1a1a1a;
   --color-background-light: #f7f7f7;
   --color-background-dark: #191919;
+
+  /* Luminous Light Theme */
+  --color-luminous-surface: #f8fafc;
+  --color-luminous-container-low: #ffffff;
+  --color-luminous-container-highest: #f1f5f9;
+  --color-luminous-sidebar: #1e293b;
+  --color-luminous-primary: #1e293b;
+  --color-luminous-primary-container: #334155;
+  --color-luminous-accent-emerald: #10b981;
+  --color-luminous-accent-rose: #f43f5e;
+  --color-luminous-outline: #f1f5f9;
+  --color-luminous-text-primary: #1e293b;
+  --color-luminous-text-secondary: #64748b;
   
-  --font-inter: "Inter", sans-serif;
-  --font-display: "Inter", sans-serif;
+  --font-inter: var(--font-inter), sans-serif;
+  --font-manrope: var(--font-manrope), sans-serif;
+  --font-display: var(--font-manrope), sans-serif;
 
   --border-radius-default: 0.25rem;
   --border-radius-lg: 0.5rem;
   --border-radius-xl: 0.75rem;
   --border-radius-full: 9999px;
+
+  --animate-fade-hint: fadeHint 4s ease 1.5s both;
+  --animate-mscroll: mscroll 1.4s ease infinite;
+
+  @keyframes fadeHint {
+    0% { opacity: 0; transform: translateY(6px); }
+    25% { opacity: 1; transform: translateY(0); }
+    75% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes mscroll {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(7px); opacity: 0; }
+  }
 }
 
 :root {
